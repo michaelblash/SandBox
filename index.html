@@ -1,9 +1,37 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Michael BL's Sandbox</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Michael BL's Sandbox</title>
+  <style>
+    body {
+      -webkit-column-count: 5;
+      -moz-column-count: 5;
+      column-count: 5;
+    }
+  </style>
 </head>
 <body>
-<h1></h1>
+  <div id="exercise-box">
+  </div>
+  <script>
+    // TOC generator
+    function cmpl(s) {
+      if (s < 10) return "0" + s;
+      return "" + s;
+    }
+    var exersiceBox = document.getElementById("exercise-box");
+    for (let i = 1; i <= 66; i++) {
+      let cmplI = cmpl(i);
+      let div = document.createElement("div");
+      div.setAttribute("id", "ex-box-"+cmplI);
+      let link = document.createElement("a");
+      link.className = "exercise-link";
+      div.appendChild(link);
+      link.setAttribute("href", "ex" + cmplI + "/ex" + cmplI + ".html");
+      link.innerHTML = "Exercise " + cmplI;
+      exersiceBox.appendChild(div);
+    }
+    
+  </script>
 </body>
 </html>
