@@ -1,10 +1,65 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Exercise 01</title>
+  <title>Name Generator | Exercise 01</title>
   <style>
   </style>
+  <script src="name-base.js"></script>
+  <script src="ex01-01.js"></script>
 </head>
 <body>
+  <h1>Name Generator</h1>
+  <div id="origin-choose-list"></div>
+  <button id="generate-btn">Generate</button>
+
+
+  <script>
+
+  // rendering a checkbox pool
+  var i = 0;
+  var origins = document.getElementById("origin-choose-list");
+  for (let v of nameBase) {
+    let itemDiv = document.createElement("div");
+    itemDiv.insertAdjacentHTML("beforeend", `<input type="checkbox" name="checkbox-${i}">${v.origin}`);
+    origins.appendChild(itemDiv);
+    i++;
+  }
+
+
+
+  // the handler
+  function generateName(originIndex) {
+    namePieces = nameBase[originIndex];
+    if (namePieces) {
+      var firstNamePool = namePieces.firstName.male;
+      var firstName = firstNamePool[Math.floor(Math.random() * firstNamePool.length)];
+      var lastNamePool = namePieces.lastName;
+      var lastNameSet = lastNamePool[Math.floor(Math.random() * lastNamePool.length)];
+      var lastName = lastNameSet.root + lastNameSet.maleSuff;
+      return `${firstName} ${lastName}`;
+    }
+    return "noname";
+  }
+
+  // adding the handler to the button
+  var buttonGenerate = document.getElementById("generate-btn");
+  buttonGenerate.onclick = function() {
+    // random picking an origin
+    var inputCheckedPool = [].slice.call(origins.querySelectorAll("input:checked"));
+    var indexPool = inputCheckedPool.map(item=>{
+      var matching = item.name.match(/checkbox-(\d{1,2})/);
+      if (matching) {
+        return parseInt(matching[1]);
+      }
+      return null;
+    });
+    var index = -1;
+    if (indexPool.length > 0) {
+      index = indexPool[Math.floor(Math.random() * indexPool.length)];
+    }
+    console.log(generateName(index));
+  };
+
+  </script>
 </body>
 </html>
