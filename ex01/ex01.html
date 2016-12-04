@@ -1,34 +1,32 @@
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Name Generator | Exercise 01</title>
   <style>
   </style>
-  <script src="name-base.js"></script>
   <script src="ex01-01.js"></script>
 </head>
 <body>
   <h1>Name Generator</h1>
   <div id="origin-choose-list"></div>
   <button id="generate-btn">Generate</button>
-
+  <div><span id="generated-name-dest"></span></div>
 
   <script>
 
   // rendering a checkbox pool
-  var i = 0;
   var origins = document.getElementById("origin-choose-list");
-  for (let v of nameBase) {
-    let itemDiv = document.createElement("div");
-    itemDiv.insertAdjacentHTML("beforeend", `<input type="checkbox" name="checkbox-${i}">${v.origin}`);
-    origins.appendChild(itemDiv);
-    i++;
-  }
+  if (nameBaseHandler)
+    for (let v of nameBaseHandler) {
+      let itemDiv = document.createElement("div");
+      itemDiv.insertAdjacentHTML("beforeend", `<input type="checkbox" name="checkbox-${v.index}">${v.origin}`);
+      origins.appendChild(itemDiv);
+    }
 
 
 
   // the handler
-  function generateName(originIndex) {
+/*  function generateName(originIndex) {
     namePieces = nameBase[originIndex];
     if (namePieces) {
       var firstNamePool = namePieces.firstName.male;
@@ -57,9 +55,9 @@
     if (indexPool.length > 0) {
       index = indexPool[Math.floor(Math.random() * indexPool.length)];
     }
-    console.log(generateName(index));
+    document.getElementById("generated-name-dest").innerHTML = generateName(index);
   };
-
+*/
   </script>
 </body>
 </html>
