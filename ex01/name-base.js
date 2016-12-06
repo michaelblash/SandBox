@@ -1,4 +1,4 @@
-[
+var names = [
   {
     "origin": "Russian",
     "firstName": {
@@ -73,4 +73,4 @@
         }
     ]
   }
-]
+];

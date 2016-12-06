@@ -4,16 +4,22 @@
   <title>Name Generator | Exercise 01</title>
   <style>
   </style>
+  <script src="util.js"></script>
+  <script src="name-base.js"></script>
   <script src="ex01-01.js"></script>
 </head>
 <body>
   <h1>Name Generator</h1>
   <div id="origin-choose-list"></div>
+  <div id="gender-choose-list">
+    <input type="radio" name="gender" value="male" checked> Male
+    <input type="radio" name="gender" value="fem"> Female
+  </div>
   <button id="generate-btn">Generate</button>
   <div><span id="generated-name-dest"></span></div>
+  
 
   <script>
-
   // rendering a checkbox pool
   var origins = document.getElementById("origin-choose-list");
   if (nameBaseHandler)
@@ -23,41 +29,29 @@
       origins.appendChild(itemDiv);
     }
 
-
-
-  // the handler
-/*  function generateName(originIndex) {
-    namePieces = nameBase[originIndex];
-    if (namePieces) {
-      var firstNamePool = namePieces.firstName.male;
-      var firstName = firstNamePool[Math.floor(Math.random() * firstNamePool.length)];
-      var lastNamePool = namePieces.lastName;
-      var lastNameSet = lastNamePool[Math.floor(Math.random() * lastNamePool.length)];
-      var lastName = lastNameSet.root + lastNameSet.maleSuff;
-      return `${firstName} ${lastName}`;
-    }
-    return "noname";
-  }
-
   // adding the handler to the button
   var buttonGenerate = document.getElementById("generate-btn");
   buttonGenerate.onclick = function() {
     // random picking an origin
     var inputCheckedPool = [].slice.call(origins.querySelectorAll("input:checked"));
-    var indexPool = inputCheckedPool.map(item=>{
+    var indexPool = inputCheckedPool.map(item => {
       var matching = item.name.match(/checkbox-(\d{1,2})/);
       if (matching) {
         return parseInt(matching[1]);
       }
-      return null;
+      return NaN;
+    }).filter(item => {
+      return !isNaN(item);
     });
     var index = -1;
     if (indexPool.length > 0) {
-      index = indexPool[Math.floor(Math.random() * indexPool.length)];
+      index = getRandomItem(indexPool);
     }
-    document.getElementById("generated-name-dest").innerHTML = generateName(index);
+    var nameObject = nameBaseHandler.generateName(index, document.querySelector(`input[name="gender"]:checked`).value);
+    nameObject.firstName = nameObject.firstName || "";
+    nameObject.lastName = nameObject.lastName || "";
+    document.getElementById("generated-name-dest").innerHTML = `${nameObject.firstName} ${nameObject.lastName}`;
   };
-*/
   </script>
 </body>
 </html>
