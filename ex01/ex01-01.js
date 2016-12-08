@@ -1,6 +1,6 @@
 var nameBaseHandler = {
-    nameBase: names
-  };
+  nameBase: names
+};
 
 nameBaseHandler[Symbol.iterator] = function() {
   let i = 0;

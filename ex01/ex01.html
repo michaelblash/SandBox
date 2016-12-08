@@ -1,10 +1,11 @@
+<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Name Generator | Exercise 01</title>
   <style>
   </style>
-  <script src="util.js"></script>
+  <script src="../util.js"></script>
   <script src="name-base.js"></script>
   <script src="ex01-01.js"></script>
 </head>
@@ -17,7 +18,6 @@
   </div>
   <button id="generate-btn">Generate</button>
   <div><span id="generated-name-dest"></span></div>
-  
 
   <script>
   // rendering a checkbox pool
@@ -28,13 +28,11 @@
       itemDiv.insertAdjacentHTML("beforeend", `<input type="checkbox" name="checkbox-${v.index}">${v.origin}`);
       origins.appendChild(itemDiv);
     }
-
   // adding the handler to the button
   var buttonGenerate = document.getElementById("generate-btn");
   buttonGenerate.onclick = function() {
     // random picking an origin
-    var inputCheckedPool = [].slice.call(origins.querySelectorAll("input:checked"));
-    var indexPool = inputCheckedPool.map(item => {
+    var indexPool = [].slice.call(origins.querySelectorAll("input:checked")).map(item => {
       var matching = item.name.match(/checkbox-(\d{1,2})/);
       if (matching) {
         return parseInt(matching[1]);
@@ -53,5 +51,6 @@
     document.getElementById("generated-name-dest").innerHTML = `${nameObject.firstName} ${nameObject.lastName}`;
   };
   </script>
+
 </body>
 </html>
