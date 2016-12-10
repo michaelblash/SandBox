@@ -4,6 +4,43 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Higher Lower | Exercise 02</title>
   <style>
+  .content-block {
+    float: left;
+    width: 300px;
+    height: 300px;
+    background-color: #aaffff;
+  }
+  #item-block {
+    margin: auto;
+    width: 600px;
+  }
+
+  #prevoius-item {
+    margin-left: -1500px;
+    transition: margin-left 0.1s;
+    transition-timing-function: ease-in;
+  }
+  #next-item {
+    float: right;
+    margin-right: 0;
+    transition: margin-right 0.1s;
+    transition-timing-function: ease-in;
+  }
+
+  #prevoius-item.slideinout {
+    margin-left: 0;
+    transition: margin-left 0s;
+  }
+  #next-item.slideoutin {
+    margin-right: -1500px;
+    transition: margin-right 0s;
+  }
+  body {
+    overflow: hidden;
+  }
+  #scoreboard {
+    height: 50px;
+  }
 
   </style>
   <script src="../util.js"></script>
@@ -12,13 +49,92 @@
 </head>
 <body>
   <h1>Higher Lower Game</h1>
-  <button id="nextQuestion">Next</button>
-
+  <div>
+    <span id="button-panel">
+      <button class="lower-button">Lower</button>
+      <button class="higher-button">Higher</button>
+    </span>
+  </div>
+  <div id="scoreboard"> </div>
+  <div id="item-block">
+    <div class="content-block" id="prevoius-item"></div>
+    <div class="content-block" id="current-item"></div>
+    <div class="content-block" id="next-item"></div>
+  </div>
   <script>
+  var prevItem = document.getElementById("prevoius-item");
+  var curItem = document.getElementById("current-item");
+  var nextItem = document.getElementById("next-item");
+  var firstItem = questionBaseHandler.getNext();
+  var secondItem = questionBaseHandler.getNext();
+  var isHigher;
+  var score = 0;
+  if (firstItem.answer < secondItem.answer) isHigher = true;
+  else isHigher = false;
+  curItem.innerHTML = "<p>" + firstItem.question + "</p><p>" + firstItem.answer + "</p>";
+  nextItem.innerHTML = "<p>" + secondItem.question + "</p>";
 
-  document.getElementById("nextQuestion").onclick = function() {
-    console.log(questionBaseHandler.getNext());
+  document.getElementById("button-panel").onclick = function(event) {
+    var target = event.target;
+    if (target.classList.contains("lower-button")) {
+      if (!isHigher) {
+        handleCorrect();
+      } else {
+        handleError();
+      }
+    } else if (target.classList.contains("higher-button")) {
+      if (isHigher) {
+        handleCorrect();
+      } else {
+        handleError();
+      }
+    }
   };
+  document.getElementById("scoreboard").onclick = function(event) {
+    if (event.target.classList.contains("next-button")) {
+      firstItem = secondItem;
+      secondItem = questionBaseHandler.getNext();
+      nextItem.innerHTML = "<p>" + secondItem.question + "</p>";
+      if (firstItem.answer < secondItem.answer) isHigher = true;
+      else isHigher = false;
+      prevItem.classList.remove("slideinout");
+      nextItem.classList.remove("slideoutin");
+      this.innerHTML = "";
+
+    }
+  };
+
+  function showCorrectAnswer() {
+    var answer = document.createElement("p");
+    answer.innerHTML = secondItem.answer;
+    nextItem.appendChild(answer);
+  }
+  function showScore() {
+    var scoreboard = document.getElementById("scoreboard");
+    scoreboard.innerHTML = "Your score: " + score;
+  }
+
+  function handleCorrect() {
+    score++;
+    showCorrectAnswer();
+    prevItem.classList.add("slideinout");
+    nextItem.classList.add("slideoutin");
+    prevItem.innerHTML = "";
+    while (curItem.firstElementChild) {
+      prevItem.appendChild(curItem.firstElementChild);
+    }
+    while (nextItem.firstElementChild) {
+      curItem.appendChild(nextItem.firstElementChild);
+    }
+    var scoreboard = document.getElementById("scoreboard");
+    scoreboard.innerHTML = `Correct! <button class="next-button">Next</button>`;
+  }
+
+  function handleError() {
+    showCorrectAnswer();
+    showScore();
+  }
+
   </script>
 
 </body>
