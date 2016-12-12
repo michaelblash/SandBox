@@ -21,6 +21,9 @@ var questionBaseHandler = (function(questionArr) {
     };
   }
   return {
-    getNext
+    getNext,
+    reset() {
+      pointer = length;
+    }
   }
 })(questions);

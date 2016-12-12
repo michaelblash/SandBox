@@ -7,14 +7,22 @@
   .content-block {
     float: left;
     width: 300px;
-    height: 300px;
-    background-color: #aaffff;
+    text-align: center;
+  }
+  .content-block p:first-child {
+    font-weight: bold;
   }
   #item-block {
     margin: auto;
     width: 600px;
+    height: 300px;
   }
-
+  #button-panel {
+    margin-left: 50%;
+  }
+  #button-panel button {
+    margin-left: 100px;
+  }
   #prevoius-item {
     margin-left: -1500px;
     transition: margin-left 0.1s;
@@ -40,6 +48,7 @@
   }
   #scoreboard {
     height: 50px;
+    text-align: center;
   }
 
   </style>
@@ -49,82 +58,96 @@
 </head>
 <body>
   <h1>Higher Lower Game</h1>
-  <div>
-    <span id="button-panel">
-      <button class="lower-button">Lower</button>
-      <button class="higher-button">Higher</button>
-    </span>
+  <div id="button-panel-wrap">
+    <div id="button-panel">
+      <div>
+        <button class="higher-button">Higher &uarr;</button>
+      </div>
+      <div>
+        <button class="lower-button">Lower &darr;</button>
+      </div>
+    </div>
   </div>
-  <div id="scoreboard"> </div>
   <div id="item-block">
     <div class="content-block" id="prevoius-item"></div>
     <div class="content-block" id="current-item"></div>
     <div class="content-block" id="next-item"></div>
   </div>
-  <script>
-  var prevItem = document.getElementById("prevoius-item");
-  var curItem = document.getElementById("current-item");
-  var nextItem = document.getElementById("next-item");
-  var firstItem = questionBaseHandler.getNext();
-  var secondItem = questionBaseHandler.getNext();
-  var isHigher;
-  var score = 0;
-  if (firstItem.answer < secondItem.answer) isHigher = true;
-  else isHigher = false;
-  curItem.innerHTML = "<p>" + firstItem.question + "</p><p>" + firstItem.answer + "</p>";
-  nextItem.innerHTML = "<p>" + secondItem.question + "</p>";
+  <div id="scoreboard"></div>
 
+  <script>
+  var prevItemContainer = document.getElementById("prevoius-item");
+  var curItemContainer = document.getElementById("current-item");
+  var nextItemContainer = document.getElementById("next-item");
+  var firstItemData = questionBaseHandler.getNext();
+  var secondItemData = questionBaseHandler.getNext();
+  var score = 0;
+  // initial setting first two items
+  curItemContainer.innerHTML = "<p>" + firstItemData.question + "</p><p>" + firstItemData.answer + " m</p>";
+  nextItemContainer.innerHTML = "<p>" + secondItemData.question + "</p>";
+
+// add handlers for higher/lower buttons
   document.getElementById("button-panel").onclick = function(event) {
     var target = event.target;
     if (target.classList.contains("lower-button")) {
-      if (!isHigher) {
+      if (!(firstItemData.answer < secondItemData.answer)) {
         handleCorrect();
       } else {
         handleError();
       }
     } else if (target.classList.contains("higher-button")) {
-      if (isHigher) {
+      if (firstItemData.answer < secondItemData.answer) {
         handleCorrect();
       } else {
         handleError();
       }
     }
   };
-  document.getElementById("scoreboard").onclick = function(event) {
-    if (event.target.classList.contains("next-button")) {
-      firstItem = secondItem;
-      secondItem = questionBaseHandler.getNext();
-      nextItem.innerHTML = "<p>" + secondItem.question + "</p>";
-      if (firstItem.answer < secondItem.answer) isHigher = true;
-      else isHigher = false;
-      prevItem.classList.remove("slideinout");
-      nextItem.classList.remove("slideoutin");
-      this.innerHTML = "";
 
+  // add a handler for scoreboard button indirectly
+  document.getElementById("scoreboard").onclick = function(event) {
+    var elemClassList = event.target.classList;
+    if (elemClassList.contains("next-button")) {
+      firstItemData = secondItemData;
+      secondItemData = questionBaseHandler.getNext();
+      nextItemContainer.innerHTML = "<p>" + secondItemData.question + "</p>";
+      prevItemContainer.classList.remove("slideinout");
+      nextItemContainer.classList.remove("slideoutin");
+      this.innerHTML = "";
+    } else if (elemClassList.contains("again-button")) {
+      var hlButtonsCollection = document.querySelectorAll("#button-panel button");
+      for (var i = 0; i < hlButtonsCollection.length; i++) {
+        hlButtonsCollection[i].disabled = false;
+      }
+      score = 0;
+      questionBaseHandler.reset();
+      firstItemData = questionBaseHandler.getNext();
+      secondItemData = questionBaseHandler.getNext();
+      curItemContainer.innerHTML = "<p>" + firstItemData.question + "</p><p>" + firstItemData.answer + " m</p>";
+      nextItemContainer.innerHTML = "<p>" + secondItemData.question + "</p>";
+      prevItemContainer.innerHTML = "";
+      var scoreboard = document.getElementById("scoreboard");
+      scoreboard.innerHTML = "";
     }
   };
 
   function showCorrectAnswer() {
     var answer = document.createElement("p");
-    answer.innerHTML = secondItem.answer;
-    nextItem.appendChild(answer);
-  }
-  function showScore() {
-    var scoreboard = document.getElementById("scoreboard");
-    scoreboard.innerHTML = "Your score: " + score;
+    answer.innerHTML = secondItemData.answer + " m";
+    nextItemContainer.appendChild(answer);
   }
 
   function handleCorrect() {
     score++;
     showCorrectAnswer();
-    prevItem.classList.add("slideinout");
-    nextItem.classList.add("slideoutin");
-    prevItem.innerHTML = "";
-    while (curItem.firstElementChild) {
-      prevItem.appendChild(curItem.firstElementChild);
+    prevItemContainer.classList.add("slideinout");
+    nextItemContainer.classList.add("slideoutin");
+    prevItemContainer.innerHTML = "";
+    while (curItemContainer.firstElementChild) {
+      prevItemContainer.appendChild(curItemContainer.firstElementChild);
     }
-    while (nextItem.firstElementChild) {
-      curItem.appendChild(nextItem.firstElementChild);
+    while (nextItemContainer.firstElementChild) {
+      curItemContainer.appendChild(nextItemContainer.firstElementChild);
     }
     var scoreboard = document.getElementById("scoreboard");
     scoreboard.innerHTML = `Correct! <button class="next-button">Next</button>`;
@@ -132,7 +155,12 @@
 
   function handleError() {
     showCorrectAnswer();
-    showScore();
+    var scoreboard = document.getElementById("scoreboard");
+    scoreboard.innerHTML = "Your score: " + score + ` <button class="again-button">Try again</button>`;
+    var hlButtonsCollection = document.querySelectorAll("#button-panel button");
+    for (var i = 0; i < hlButtonsCollection.length; i++) {
+      hlButtonsCollection[i].disabled = true;
+    }
   }
 
   </script>
