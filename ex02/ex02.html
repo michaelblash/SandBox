@@ -79,14 +79,27 @@
   var prevItemContainer = document.getElementById("prevoius-item");
   var curItemContainer = document.getElementById("current-item");
   var nextItemContainer = document.getElementById("next-item");
+  var scoreboard = document.getElementById("scoreboard");
   var firstItemData = questionBaseHandler.getNext();
   var secondItemData = questionBaseHandler.getNext();
   var score = 0;
+  var nextButton = document.createElement("button");
+  nextButton.textContent = "Next";
+  nextButton.className = "next-button";
+  var againButton = document.createElement("button");
+  againButton.textContent = "Try again";
+  againButton.className = "again-button";
+  var scoreboardTextNode = document.createTextNode("Correct! ");
+  scoreboard.appendChild(scoreboardTextNode);
+  scoreboard.appendChild(nextButton);
+  scoreboard.style.visibility = "hidden";
+  
+
   // initial setting first two items
   curItemContainer.innerHTML = "<p>" + firstItemData.question + "</p><p>" + firstItemData.answer + " m</p>";
   nextItemContainer.innerHTML = "<p>" + secondItemData.question + "</p>";
 
-// add handlers for higher/lower buttons
+  // add handlers for higher/lower buttons
   document.getElementById("button-panel").onclick = function(event) {
     var target = event.target;
     if (target.classList.contains("lower-button")) {
@@ -105,20 +118,18 @@
   };
 
   // add a handler for scoreboard button indirectly
-  document.getElementById("scoreboard").onclick = function(event) {
-    var elemClassList = event.target.classList;
+  scoreboard.onclick = function(event) {
+    var target = event.target;
+    var elemClassList = target.classList;
     if (elemClassList.contains("next-button")) {
       firstItemData = secondItemData;
       secondItemData = questionBaseHandler.getNext();
       nextItemContainer.innerHTML = "<p>" + secondItemData.question + "</p>";
       prevItemContainer.classList.remove("slideinout");
       nextItemContainer.classList.remove("slideoutin");
-      this.innerHTML = "";
+      this.style.visibility = "hidden";
     } else if (elemClassList.contains("again-button")) {
-      var hlButtonsCollection = document.querySelectorAll("#button-panel button");
-      for (var i = 0; i < hlButtonsCollection.length; i++) {
-        hlButtonsCollection[i].disabled = false;
-      }
+      buttonPanelIsEnabled(false);
       score = 0;
       questionBaseHandler.reset();
       firstItemData = questionBaseHandler.getNext();
@@ -126,8 +137,9 @@
       curItemContainer.innerHTML = "<p>" + firstItemData.question + "</p><p>" + firstItemData.answer + " m</p>";
       nextItemContainer.innerHTML = "<p>" + secondItemData.question + "</p>";
       prevItemContainer.innerHTML = "";
-      var scoreboard = document.getElementById("scoreboard");
-      scoreboard.innerHTML = "";
+      this.firstChild.textContent = "Correct! ";
+      this.replaceChild(nextButton, againButton);
+      this.style.visibility = "hidden";
     }
   };
 
@@ -149,21 +161,24 @@
     while (nextItemContainer.firstElementChild) {
       curItemContainer.appendChild(nextItemContainer.firstElementChild);
     }
-    var scoreboard = document.getElementById("scoreboard");
-    scoreboard.innerHTML = `Correct! <button class="next-button">Next</button>`;
+    scoreboard.style.visibility = "visible";
   }
 
   function handleError() {
     showCorrectAnswer();
-    var scoreboard = document.getElementById("scoreboard");
-    scoreboard.innerHTML = "Your score: " + score + ` <button class="again-button">Try again</button>`;
-    var hlButtonsCollection = document.querySelectorAll("#button-panel button");
-    for (var i = 0; i < hlButtonsCollection.length; i++) {
-      hlButtonsCollection[i].disabled = true;
-    }
+    scoreboardTextNode.textContent = "Your score: " + score + " ";
+    scoreboard.replaceChild(againButton, nextButton);
+    buttonPanelIsEnabled(true);
+    scoreboard.style.visibility = "visible";
   }
 
+  function buttonPanelIsEnabled(value) {
+    value = !!value;
+    var hlButtonsCollection = document.querySelectorAll("#button-panel button");
+    for (var i = 0; i < hlButtonsCollection.length; i++) {
+      hlButtonsCollection[i].disabled = value;
+    }
+  }
   </script>
-
 </body>
 </html>
